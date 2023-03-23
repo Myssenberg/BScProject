@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  zkdev:
+    container_name: my-bachelor-project
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: zkdev-container
+    volumes:
+      - ./workspace:/workspace
