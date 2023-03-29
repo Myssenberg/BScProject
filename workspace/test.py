@@ -15,11 +15,16 @@ com = g**r
 stmt = zksk.DLRep(com, g**x, )
 
 """
+
 x = zksk.Secret(name="x")
 g = EcGroup().generator()
-y = 42 * g
+y = 100 * g
 stmt = zksk.DLRep(y, x * g)
-nizk = stmt.prove({x: 42})
+nizk = stmt.prove({x: 100})
 v = stmt.verify(nizk)
 
 print(v)
+print(nizk)
+print(x.value)
+print(g)
+
