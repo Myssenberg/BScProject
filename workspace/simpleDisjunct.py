@@ -8,15 +8,15 @@ from petlib.ec import EcGroup
 group = EcGroup()
 
 g0 = group.generator()
-g1 = group.generator()
+#g1 = group.generator()
 
-x0 = Secret(value=3)
-x1 = Secret(value=1)
+x0 = Secret(name="x0")
+x1 = Secret(name="x1")
 
-y0 = x0.value * g0
-y1 = x1.value * g1
+y0 = 3 * g0 #Here e.g. call function encryption (El-gamal)
+y1 = 5 * g0
 
-stmt = DLRep(y0, x0 * g0) | DLRep(y1, x1 * g1)
+stmt = DLRep(y0, x0 * g0) | DLRep(y1, x1 * g0)
 stmt.subproofs[1].set_simulated()
 
 nizk = stmt.prove({x0: 3})
