@@ -2,6 +2,7 @@ import zksk;
 import petlib.bn as bn;
 import petlib.ec as ec;
 from petlib.ec import EcGroup
+import random
 
 #I know 'a' such that 'g^a mod p = b'
 """
@@ -27,4 +28,18 @@ print(v)
 print(nizk)
 print(x.value)
 print(g)
+
+group = EcGroup()
+gen = group.generator()
+params = group.parameters()
+x = params["a"]
+y = params["b"]
+p = params["p"]
+a = random.randint(1, p-1)
+b = a * gen
+
+print(params)
+print(gen)
+
+print(a*gen == b)
 
