@@ -8,11 +8,12 @@ def keygen(): #inspiration from https://github.com/gdanezis/petlib/blob/master/e
     sk = order.random()
     pk = sk * g
     
-    return (g, order, pk, sk)
+    return (group, g, order, pk, sk)
 
 
-def enc(g, order, pk, m):
-    r = order.random()
+def enc(g, order, pk, m, r):
+    
+    #r = order.random() ... randomness generation moved to enc proof
 
     #Elliptic curve so g**m * pk**r becomes m*g + r*pk
     c0 = r*g
@@ -22,13 +23,17 @@ def enc(g, order, pk, m):
 
 def dec(c, sk):
     c0, c1 = c
-    #Should this be changed for ec as well?
-    message = c1 + (c0*(-sk))
+    print(c0)
+    print(sk)
 
-    return message/g
+    message = (c1 + (-sk*c0))
+
+    return message
 
 
-g, order, pk, sk = keygen()
-e = enc(g, order, pk, 0)
+group, g, order, pk, sk = keygen()
+e = enc(g, order, pk, 1, order.random())
 m = dec(e, sk)
 print(m)
+v = m == 1*g
+print(v)
