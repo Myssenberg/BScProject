@@ -9,6 +9,7 @@ Assuming you have installed Docker on your computer this is how you run the code
 2. Open Docker and keep it running
 3. Open terminal in repository folder.
 4. In terminal write "make build" (only necessary for the first run), then "make up".
+    
     4a. If you do not have make installed, then alternatively: "docker-compose build" followed by "docker-compose up -d"
 5. Open VS Code and click on small purple square in the bottom-left corner
 6. In drop-down menu choose "Attach to running container" and choose the running docker container.
