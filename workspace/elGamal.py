@@ -31,9 +31,27 @@ def dec(c, sk):
     return message
 
 
+
+def re_enc(g, order, h, ct, rPrime):
+    c0, c1 = ct
+
+    #rPrime = order.random()
+
+    c0Prime = c0 + rPrime*g
+    c1Prime = c1 + rPrime*h
+
+    return (c0Prime, c1Prime)
+
+
+
+
 group, g, order, pk, sk = keygen()
 e = enc(g, order, pk, 1, order.random())
 m = dec(e, sk)
 print(m)
 v = m == 1*g
 print(v)
+
+reenc = re_enc(g, order, pk, e, order.random())
+
+print(reenc)
