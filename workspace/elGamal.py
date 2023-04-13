@@ -47,6 +47,13 @@ def re_enc(g, order, h, ct, rPrime):
 
 group, g, order, pk, sk = keygen()
 e = enc(g, order, pk, 1, order.random())
+
+c1, c2 = e
+
+print("c1 type: ", type(c1))
+print("c2 type: ", type(c2))
+print("SK type: ", type(sk))
+
 m = dec(e, sk)
 print(m)
 v = m == 1*g
