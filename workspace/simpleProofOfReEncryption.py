@@ -22,8 +22,10 @@ reEnc = re_enc(g, order, pk, c, rPrime.value)
 
 c0Prime, c1Prime = reEnc
 
-dec_stmt = DLRep(c0Prime, c0 + rPrime*g) & DLRep(c1Prime, c1 + rPrime*pk) # Should maybe be (c1 & c2) & (c1' & c2')
+one = Secret(name="one", value=1)
+
+dec_stmt = DLRep(c0Prime, one*c0 + rPrime*g) & DLRep(c1Prime, one*c1 + rPrime*pk) # Should maybe be (c1 & c2) & (c1' & c2')
 
 nizk = dec_stmt.prove({rPrime: rPrime.value})
 v = dec_stmt.verify(nizk)
-print(v)
+print("Proof verified: ", v)
