@@ -10,7 +10,7 @@ from elGamal import keygen, dec, enc
 
 group, g, order, pk, sk = keygen()
 
-m = Secret(name="m", value=1)
+m = Secret(name="m", value=2)
 r = Secret(name="r", value=order.random())
 
 c0, c1 = enc(g, order, pk, m.value, r.value)

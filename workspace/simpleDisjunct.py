@@ -13,7 +13,7 @@ g0 = group.generator()
 x0 = Secret(name="x0")
 x1 = Secret(name="x1")
 
-y0 = 3 * g0 #Here e.g. call function encryption (El-gamal)
+y0 = 3 * g0
 y1 = 5 * g0
 
 stmt = DLRep(y0, x0 * g0) | DLRep(y1, x1 * g0)
