@@ -47,11 +47,28 @@ c2, c3 = enc(g, order, pk_vs, lv.value, r_2.value)
 enc_stmt2 = DLRep(c2, r_2*g) & DLRep(c3, lv*g + r_2*pk_vs)
 
 #Proof of re-encryption
+c4, c5 = enc(g, order, pk_vs, 0, order.random()) #don't need to know these values for later
+
+r_3.value = order.random()
+
+reEnc = re_enc(g, order, pk_vs, (c4, g+c5), r_3.value)
+
+c4Prime, c5Prime = reEnc
+
+one = Secret(name="one", value=1)
+
+reenc_stmt = DLRep(c4Prime, one*c4 + r_3*g) & DLRep(c5Prime, one*(c5+g) + r_3*pk_vs)
 
 
+#Proof of knowledge
+sk.value = sk_id
+
+y = sk.value * g
+
+know_stmt = zksk.DLRep(y, sk * g)
 
 #Proof
-stmt = enc_stmt1 & range_stmt & enc_stmt2
-nizk = stmt.prove({v: v.value, r_1: r_1.value, lv: lv.value, r_2: r_2.value})
+stmt = enc_stmt1 & range_stmt & enc_stmt2 & reenc_stmt & know_stmt
+nizk = stmt.prove({v: v.value, r_1: r_1.value, lv: lv.value, r_2: r_2.value, r_3: r_3.value, sk: sk.value})
 v = stmt.verify(nizk)
 print("Proof verified:", v)

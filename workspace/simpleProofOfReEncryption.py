@@ -24,8 +24,8 @@ c0Prime, c1Prime = reEnc
 
 one = Secret(name="one", value=1)
 
-dec_stmt = DLRep(c0Prime, one*c0 + rPrime*g) & DLRep(c1Prime, one*c1 + rPrime*pk) # Should maybe be (c1 & c2) & (c1' & c2')
+reenc_stmt = DLRep(c0Prime, one*c0 + rPrime*g) & DLRep(c1Prime, one*c1 + rPrime*pk) # Should maybe be (c1 & c2) & (c1' & c2')
 
-nizk = dec_stmt.prove({rPrime: rPrime.value})
-v = dec_stmt.verify(nizk)
+nizk = reenc_stmt.prove({rPrime: rPrime.value})
+v = reenc_stmt.verify(nizk)
 print("Proof verified: ", v)
