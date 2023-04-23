@@ -23,13 +23,21 @@ print("Proof verified: ", verify)
 group = ec.EcGroup()
 
 
-x = Secret(value=15)
-randomizer = Secret(value=group.order().random())
+x = Secret()
+randomizer = Secret()
+
+r = group.order().random()
 
 g, h = make_generators(2, group)
 lo = 7
 hi = 15
 
-com = x * g + randomizer * h
+com = 13 * g + r * h
 
-stmt = RangeStmt(com.eval(), g, h, lo, hi, x, randomizer)
+stmt = RangeStmt(com, g, h, lo, hi, x, randomizer)
+
+nizk = stmt.prove({x: 13, randomizer: r})
+
+verify = stmt.verify(nizk)
+
+print("Proof verified:", verify)

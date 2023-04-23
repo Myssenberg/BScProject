@@ -16,7 +16,7 @@ x1 = Secret(name="x1")
 y0 = 3 * g0
 y1 = 5 * g0
 
-stmt = DLRep(y0, x0 * g0) | DLRep(y1, x1 * g0)
+stmt = DLRep(y0, x0 * g0) | (DLRep(y1, x1 * g0) & DLRep(y1, x1 * g0))
 stmt.subproofs[1].set_simulated()
 
 nizk = stmt.prove({x0: 3})
