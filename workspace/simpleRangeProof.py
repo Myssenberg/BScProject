@@ -6,10 +6,13 @@ from petlib import ec
 import zksk
 
 """
-x = Secret(value=4)
+group = ec.EcGroup()
+g = group.generator()
 
-lo = 0
-hi = 3 #strictly x smaller than, so for two candidates it should be 2, because x can then be =0 or =1, but not =2
+x = Secret(value=2*g)
+
+lo = 1
+hi = 1000000 #strictly x smaller than, so for two candidates it should be 2, because x can then be =0 or =1, but not =2
 
 stmt = RangeOnlyStmt(lo, hi, x)
 
@@ -18,25 +21,23 @@ nizk = stmt.prove()
 verify = stmt.verify(nizk)
 
 print("Proof verified: ", verify)
-"""
 
+"""
 group = ec.EcGroup()
 
 
-x = Secret()
-randomizer = Secret()
-
-r = group.order().random()
+x = Secret(value= 13)
+randomizer = Secret(value = group.order().random())
 
 g, h = make_generators(2, group)
 lo = 7
 hi = 15
 
-com = 13 * g + r * h
+com = 13 * g + randomizer * h
 
 stmt = RangeStmt(com, g, h, lo, hi, x, randomizer)
 
-nizk = stmt.prove({x: 13, randomizer: r})
+nizk = stmt.prove({x: 13, randomizer: randomizer.value})
 
 verify = stmt.verify(nizk)
 
