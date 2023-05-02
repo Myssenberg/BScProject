@@ -44,6 +44,7 @@ def re_enc(g, order, h, ct, rPrime):
 
 
 
+"""
 
 group, g, order, pk, sk = keygen()
 e = enc(g, order, pk, 1, order.random())
@@ -62,3 +63,4 @@ print(v)
 reenc = re_enc(g, order, pk, e, order.random())
 
 print(reenc)
+"""
