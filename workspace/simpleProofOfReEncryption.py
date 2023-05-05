@@ -10,7 +10,7 @@ from elGamal import keygen, dec, enc, re_enc
 group, g, order, pk, sk = keygen()
 
 #Alice encryption
-m = Secret(name="m", value=1)
+m = Secret(name="m", value=1) #m and r does not necessarily need to be secrets I think
 r = Secret(name="r", value=order.random())
 c = enc(g, order, pk, m.value, r.value)
 c0, c1 = c
