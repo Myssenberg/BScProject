@@ -1,4 +1,3 @@
-import random
 from petlib.ec import EcGroup
 
 def keygen(): #inspiration from https://github.com/gdanezis/petlib/blob/master/examples/AHEG.py
@@ -8,13 +7,10 @@ def keygen(): #inspiration from https://github.com/gdanezis/petlib/blob/master/e
     sk = order.random()
     pk = sk * g
     
-    return (group, g, order, pk, sk)
+    return (g, order, pk, sk)
 
 
-def enc(g, order, pk, m, r):
-    
-    #r = order.random() ... randomness generation moved to enc proof
-
+def enc(g, pk, m, r):
     #Elliptic curve so g**m * pk**r becomes m*g + r*pk
     c0 = r*g
     c1 = m*g + r*pk
@@ -32,35 +28,10 @@ def dec(c, sk):
 
 
 
-def re_enc(g, order, h, ct, rPrime):
+def re_enc(g, h, ct, r):
     c0, c1 = ct
 
-    #rPrime = order.random()
-
-    c0Prime = c0 + rPrime*g
-    c1Prime = c1 + rPrime*h
+    c0Prime = c0 + r*g
+    c1Prime = c1 + r*h
 
     return (c0Prime, c1Prime)
-
-
-
-"""
-
-group, g, order, pk, sk = keygen()
-e = enc(g, order, pk, 1, order.random())
-
-c1, c2 = e
-
-print("c1 type: ", type(c1))
-print("c2 type: ", type(c2))
-print("SK type: ", type(sk))
-
-m = dec(e, sk)
-print(m)
-v = m == 1*g
-print(v)
-
-reenc = re_enc(g, order, pk, e, order.random())
-
-print(reenc)
-"""

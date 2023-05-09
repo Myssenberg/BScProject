@@ -1,14 +1,12 @@
-from zksk import Secret, DLRep, utils
-from zksk.composition import OrProofStmt
+from zksk import Secret, DLRep
 from zksk.primitives.rangeproof import RangeStmt, RangeOnlyStmt
 import zksk
 import petlib.bn as bn
-from petlib.ec import EcGroup
 from elGamal import keygen, dec, enc, re_enc
 import time
 
 #Voter generates own sk og pk
-group, g, order, pk_id, sk_id = keygen()
+g, order, pk_id, sk_id = keygen()
 
 
 #Program generates other sks and pks, but voter only knows pks
@@ -35,7 +33,7 @@ R1_v.value = 1
 R1_r_v.value = order.random()
 
 start = time.process_time()
-R2_c0, R2_c1 = enc(g, order, pk_T, R1_v.value, R1_r_v.value)
+R2_c0, R2_c1 = enc(g, pk_T, R1_v.value, R1_r_v.value)
 time_R1_enc1 = time.process_time() - start
 
 enc_stmt1 = DLRep(R2_c0, R1_r_v*g) & DLRep(R2_c1, R1_v*g + R1_r_v*pk_T)
@@ -48,18 +46,18 @@ R1_lv.value = order.random() #this should maybe be something else? A list or som
 R1_r_lv.value = order.random()
 
 start = time.process_time()
-c2, c3 = enc(g, order, pk_vs, R1_lv.value, R1_r_lv.value)
+c2, c3 = enc(g, pk_vs, R1_lv.value, R1_r_lv.value)
 time_R1_enc2 = time.process_time() - start
 
 enc_stmt2 = DLRep(c2, R1_r_lv*g) & DLRep(c3, R1_lv*g + R1_r_lv*pk_vs)
 
 #Proof of re-encryption
-c4, c5 = enc(g, order, pk_vs, 0, order.random()) #don't need to know these values for later
+c4, c5 = enc(g, pk_vs, 0, order.random()) #don't need to know these values for later
 
 R1_r_lvs.value = order.random()
 
 start = time.process_time()
-reEnc = re_enc(g, order, pk_vs, (c4, g+c5), R1_r_lvs.value)
+reEnc = re_enc(g, pk_vs, (c4, g+c5), R1_r_lvs.value)
 time_R1_reenc = time.process_time() - start
 
 c4Prime, c5Prime = reEnc
@@ -89,14 +87,14 @@ R2_r_lv = Secret()
 R2_r_lvs = Secret()
 
 #Generates previous three encryptions
-R2_c0_v, R2_c1_v = enc(g, order, pk_T, 1, order.random())
+R2_c0_v, R2_c1_v = enc(g, pk_T, 1, order.random())
 
 
 R2_lv = R2_lvs = order.random() #lv and lvs instatiated as the same here to make the proof run
 
-R2_c0_lv, R2_c1_lv = enc(g, order, pk_vs, R2_lv, order.random())
+R2_c0_lv, R2_c1_lv = enc(g, pk_vs, R2_lv, order.random())
 
-R2_c0_lvs, R2_c1_lvs = enc(g, order, pk_vs, R2_lvs, order.random())
+R2_c0_lvs, R2_c1_lvs = enc(g, pk_vs, R2_lvs, order.random())
 
 R2_c0_i = 2*R2_c0_lvs
 R2_c1_i = 2*R2_c1_lvs
@@ -109,7 +107,7 @@ R2_ct_i = (R2_c0_i, R2_c1_i)
 R2_r_v.value = order.random()
 
 start = time.process_time()
-R2_reEnc1 = re_enc(g, order, pk_T, (R2_c0_v, R2_c1_v), R2_r_v.value)
+R2_reEnc1 = re_enc(g, pk_T, (R2_c0_v, R2_c1_v), R2_r_v.value)
 time_R2_reenc1 = time.process_time() - start
 
 R2_c0_v_Prime, R2_c1_v_Prime = R2_reEnc1
@@ -138,7 +136,7 @@ R2_dec_stmt = DLRep(0*g, one*R2_c1 + R2_sk*R2_neg_c0)
 R2_r_lv.value = order.random()
 
 start = time.process_time()
-R2_reEnc2 = re_enc(g, order, pk_vs, R2_ct_i, R2_r_lv.value)
+R2_reEnc2 = re_enc(g, pk_vs, R2_ct_i, R2_r_lv.value)
 time_R2_reenc2 = time.process_time() - start
 
 R2_c0_lv_Prime, R2_c1_lv_Prime = R2_reEnc2
@@ -152,7 +150,7 @@ R2_reenc_stmt2 = DLRep(R2_c0_lv_Prime, one*R2_c0_i + R2_r_lv*g) & DLRep(R2_c1_lv
 R2_r_lvs.value = order.random()
 
 start = time.process_time()
-R2_reEnc3 = re_enc(g, order, pk_vs, R2_ct_i, R2_r_lvs.value)
+R2_reEnc3 = re_enc(g, pk_vs, R2_ct_i, R2_r_lvs.value)
 time_R2_reenc3 = time.process_time() - start
 
 R2_c0_lvs_Prime, R2_c1_lvs_Prime = R2_reEnc3
@@ -173,7 +171,7 @@ R3_r_lv = Secret()
 R3_r_lvs = Secret()
 
 #Generates previous three encryptions
-R3_c0_v, R3_c1_v = enc(g, order, pk_T, 2, order.random())
+R3_c0_v, R3_c1_v = enc(g, pk_T, 2, order.random())
 
 
 lv = bn.Bn(211).random()
@@ -181,9 +179,9 @@ lvs = bn.Bn(211).random() #how do I make sure that m>1?
 if lvs > lv:
     lvs = lv-1
 
-R3_c0_lv, R3_c1_lv = enc(g, order, pk_vs, lv, order.random())
+R3_c0_lv, R3_c1_lv = enc(g, pk_vs, lv, order.random())
 
-R3_c0_lvs, R3_c1_lvs = enc(g, order, pk_vs, lvs, order.random())
+R3_c0_lvs, R3_c1_lvs = enc(g, pk_vs, lvs, order.random())
 
 R3_c0_i = 2*R3_c0_lvs
 R3_c1_i = 2*R3_c1_lvs
@@ -195,7 +193,7 @@ R3_ct_i = (R3_c0_i, R3_c1_i)
 R3_r_v.value = order.random()
 
 start = time.process_time()
-R3_reEnc1 = re_enc(g, order, pk_T, (R3_c0_v, R3_c1_v), R3_r_v.value) #PK_T here
+R3_reEnc1 = re_enc(g, pk_T, (R3_c0_v, R3_c1_v), R3_r_v.value) #PK_T here
 time_R3_reenc1 = time.process_time() - start
 
 R3_c0_v_Prime, R3_c1_v_Prime = R3_reEnc1
@@ -234,7 +232,7 @@ R3_range_stmt = RangeOnlyStmt(1, 1000, m)
 R3_r_lv.value = order.random()
 
 start = time.process_time()
-R3_reEnc2 = re_enc(g, order, pk_vs, R3_ct_i, R3_r_lv.value)
+R3_reEnc2 = re_enc(g, pk_vs, R3_ct_i, R3_r_lv.value)
 time_R3_reenc2 = time.process_time() - start
 
 R3_c0_lv_Prime, R3_c1_lv_Prime = R3_reEnc2
@@ -248,7 +246,7 @@ R3_reenc_stmt2 = DLRep(R3_c0_lv_Prime, one*R3_c0_i + R3_r_lv*g) & DLRep(R3_c1_lv
 R3_r_lvs.value = order.random()
 
 start = time.process_time()
-R3_reEnc3 = re_enc(g, order, pk_vs, R3_ct_i, R3_r_lvs.value)
+R3_reEnc3 = re_enc(g, pk_vs, R3_ct_i, R3_r_lvs.value)
 time_R3_reenc3 = time.process_time() - start
 
 R3_c0_lvs_Prime, R3_c1_lvs_Prime = R3_reEnc3
@@ -313,6 +311,7 @@ print("Ballot verification time:", time_R2_verify)
 
 
 """
+
 #Relation 3 proof
 stmt = relation1 | relation2 | relation3
 stmt.subproofs[0].set_simulated()
