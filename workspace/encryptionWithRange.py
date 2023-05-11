@@ -5,17 +5,17 @@ import zksk
 import petlib.bn as bn
 import petlib.ec as ec
 from petlib.ec import EcGroup
-from elGamal import keygen, dec, enc
+from elGamal import keygen, enc
 
-group, g, order, pk, sk = keygen()
+g, order, pk, sk = keygen()
 
 m = Secret() #value = 2
 r = Secret(value = order.random()) #value = order.random()
 
-m_value = 2
-r_value = order.random()
+m.value = 2
+r.value = order.random()
 
-c0, c1 = enc(g, order, pk, m_value, r.value)
+c0, c1 = enc(g, pk, m.value, r.value)
 
 enc_stmt = DLRep(c0, r*g) & DLRep(c1, m*g + r*pk)
 
@@ -23,7 +23,7 @@ range_stmt = RangeStmt(c1, g, pk, 0, 3, m, r) #Somehow not working for only two 
 
 stmt = enc_stmt & range_stmt
 
-nizk = stmt.prove({m: m_value, r: r.value})
+nizk = stmt.prove({m: m.value, r: r.value})
 v = stmt.verify(nizk)
 print("Proof verified: ", v)
 

@@ -39,7 +39,7 @@ time_R1_enc1 = time.process_time_ns() - start
 enc_stmt1 = DLRep(R1_c0, R1_r_v*g) & DLRep(R1_c1, R1_v*g + R1_r_v*pk_T)
 
 #Range proof for three candidates (vote is either 0, 1 or 2)
-R1_range_stmt = RangeStmt(R1_c1, g, pk_T, 0, 16, R1_v, R1_r_v)
+R1_range_stmt = RangeStmt(R1_c1, g, pk_T, 0, 4, R1_v, R1_r_v)
 
 #Second proof of encryption
 R1_lv.value = order.random()
