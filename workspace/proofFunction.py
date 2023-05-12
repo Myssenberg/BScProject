@@ -6,16 +6,11 @@ from elGamal import keygen, dec, enc, re_enc
 import time
 
 #Voter generates own sk og pk
-g, order, pk_id, sk_id = keygen()
-
+g, order, pk_vs, sk_vs = keygen()
 
 #Program generates other sks and pks, but voter only knows pks
 sk_T = order.random() #Tallier
 pk_T = sk_T*g
-
-sk_vs = order.random() #Voting server
-pk_vs = sk_vs*g
-
 
 def proof(g, order, sk_id, pk_T, sk_vs, pk_vs, relation):
     
@@ -58,6 +53,13 @@ def proof(g, order, sk_id, pk_T, sk_vs, pk_vs, relation):
 
     print("Relation", relation, "verified: ", v)
     print("Verification time:", verificationTime)
+
+    if relation ==1:
+        return ballotGenerationTime, verificationTime
+    elif relation ==2:
+        return ballotRandomizationTime2, verificationTime
+    elif relation==3:
+        return ballotRandomizationTime3, verificationTime
 
 def ballotGeneration(g, order, sk_id, pk_T, pk_vs):
     #RELATION 1
@@ -245,8 +247,8 @@ def ballotRandomization3(g, order, sk_vs, pk_T, pk_vs):
     R3_c0_v, R3_c1_v = enc(g, pk_T, 2, order.random())
 
 
-    lv = bn.Bn(211).random()
-    lvs = bn.Bn(211).random()
+    lv = bn.Bn(200).random()
+    lvs = bn.Bn(200).random()
     if lvs > lv:
         lvs = lv-1
 
@@ -292,11 +294,11 @@ def ballotRandomization3(g, order, sk_vs, pk_T, pk_vs):
 
     m = Secret(value=0)
 
-    for i in range(1,1000):
+    for i in range(1,200):
         if R3_m_dec == i*g:
             m.value = i
 
-    R3_range_stmt = RangeOnlyStmt(1, 1000, m)
+    R3_range_stmt = RangeOnlyStmt(1, 200, m)
 
     #Second proof of re-encryption
 
@@ -350,4 +352,83 @@ def verification(stmt, proof):
     return v
 
 
-proof(g, order, sk_id, pk_T, sk_vs, pk_vs, 2)
+####### TESTS #######
+
+"""
+#Ballot generation, 4 or 16 candidates depending on the range
+start = time.process_time_ns()
+sk_1 = order.random() #Voting server
+pk_1 = sk_vs*g
+proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 1)
+finish = time.process_time_ns() - start
+
+print("Time:", finish)
+
+"""
+"""
+#Ballot randomization (R2), 4 or 16 candidates depending on the range
+start = time.process_time_ns()
+sk_1 = order.random() #Voting server
+pk_1 = sk_vs*g
+proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 3)
+finish = time.process_time_ns() - start
+
+print("Time:", finish)
+"""
+
+
+sk_1 = order.random() #Voting server
+pk_1 = sk_vs*g
+sk_2 = order.random()
+pk_2 = sk_2*g
+time1, v1 = proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 1)
+time2, v2 = proof(g, order, sk_2, pk_T, sk_vs, pk_vs, 1)
+print("=======")
+print("total time: ", time1+time2)
+print("total verification time: ", v1+v2)
+
+"""
+sk_1 = order.random() #Voting server
+pk_1 = sk_vs*g
+sk_2 = order.random()
+pk_2 = sk_2*g
+sk_3 = order.random()
+pk_3 = sk_2*g
+sk_4 = order.random()
+pk_4 = sk_2*g
+sk_5 = order.random()
+pk_5 = sk_2*g
+sk_6 = order.random()
+pk_6 = sk_2*g
+sk_7 = order.random()
+pk_7 = sk_2*g
+sk_8 = order.random()
+pk_8 = sk_2*g
+sk_9 = order.random()
+pk_9 = sk_2*g
+sk_10 = order.random()
+pk_10 = sk_2*g
+time1, verification1 = proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 1 ^ ========")
+time2, verification2 = proof(g, order, sk_2, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 2 ^ ========")
+time3, verification3 = proof(g, order, sk_3, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 3 ^ ========")
+time4, verification4 = proof(g, order, sk_4, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 4 ^ ========")
+time5, verification5 = proof(g, order, sk_5, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 5 ^ ========")
+time6, verification6 = proof(g, order, sk_6, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 6 ^ ========")
+time7, verification7 = proof(g, order, sk_7, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 7 ^ ========")
+time8, verification8 = proof(g, order, sk_8, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 8 ^ ========")
+time9, verification9 = proof(g, order, sk_9, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 9 ^ ========")
+time10, verification10 = proof(g, order, sk_10, pk_T, sk_vs, pk_vs, 1)
+print("======== nr 10 ^ ========")
+
+print("total time: ", time1+time2+time3+time4+time5+time6+time7+time8+time9+time10)
+print("total verification time: ", verification1+verification2+verification3+verification4+verification5+verification6+verification7+verification8+verification9+verification10)
+"""

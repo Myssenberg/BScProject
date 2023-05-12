@@ -245,8 +245,8 @@ def ballotRandomization3(g, order, sk_vs, pk_T, pk_vs):
     R3_c0_v, R3_c1_v = enc(g, pk_T, 2, order.random())
 
 
-    lv = bn.Bn(10000).random()
-    lvs = bn.Bn(10000).random()
+    lv = bn.Bn(1000000).random()
+    lvs = bn.Bn(1000000).random()
     if lvs > lv:
         lvs = lv-1
 
@@ -292,11 +292,11 @@ def ballotRandomization3(g, order, sk_vs, pk_T, pk_vs):
 
     m = Secret(value=0)
 
-    for i in range(1,10000):
+    for i in range(1,1000000):
         if R3_m_dec == i*g:
             m.value = i
 
-    R3_range_stmt = RangeOnlyStmt(1, 10000, m)
+    R3_range_stmt = RangeOnlyStmt(1, 1000000, m)
 
     #Second proof of re-encryption
 
@@ -350,4 +350,10 @@ def verification(stmt, proof):
     return v
 
 
-proof(g, order, sk_id, pk_T, sk_vs, pk_vs, 3)
+start = time.process_time_ns()
+sk_1 = order.random() #Voting server
+pk_1 = sk_vs*g
+proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 3)
+finish = time.process_time_ns() - start
+
+print("Time:", finish)
