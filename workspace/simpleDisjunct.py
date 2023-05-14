@@ -1,51 +1,46 @@
+"""Example of a simple disjoint proof construction with the ZKSK library
+
+This file contains a simple example of a disjoint proof built
+with the ZKSK library.
+
+This file requires that the environment you are running on have the 'ZKSK'
+library installed.
+
+This file does not take any arguments when running, but input values
+can be tweaked in the file between runs to experiment.
+
+The code in this file illustrates a successfully built disjoint ZKP,
+and running the file as is will print out True.
+"""
+
 from zksk import Secret, DLRep
-from zksk.composition import OrProofStmt
-import zksk
-import petlib.bn as bn
-import petlib.ec as ec
 from petlib.ec import EcGroup
 
+#Generating group and generator
 group = EcGroup()
+g = group.generator()
 
-g0 = group.generator()
-#g1 = group.generator()
+#Instantiating the two Prover witnesses
+x0 = Secret()
+x1 = Secret()
 
-x0 = Secret(name="x0")
-x1 = Secret(name="x1")
+#Instatiating public values
+y0 = 3 * g
+y1 = 5 * g
 
-y0 = 3 * g0
-y1 = 5 * g0
+#Building a disjoint statement, of two separate and individual ZKPs
+stmt = DLRep(y0, x0 * g) | DLRep(y1, x1 * g)
 
-stmt = DLRep(y0, x0 * g0) | (DLRep(y1, x1 * g0) & DLRep(y1, x1 * g0))
+#Stating which proof should be simulated from the statement above
+#Think of the disjoint statement as an array of subproofs
+#in such an array, the second statement would be on index 1, 
+#making the proof simulated in this example the second proof.
 stmt.subproofs[1].set_simulated()
 
+#Generating non-interactive proof
+#Stating witness(es) for the relation to be proven
 nizk = stmt.prove({x0: 3})
+
+#Verifying proof
 v = stmt.verify(nizk)
-print(v)
-
-
-
-
-"""
-group = EcGroup()
-
-g0 = group.hash_to_point(b"one")
-g1 = group.hash_to_point(b"two")
-
-x0 = Secret(value=3)
-x1 = Secret(value=40)
-
-y0 = x0.value * g0
-y1 = x1.value * g1
-
-stmt = DLRep(y0, x0 * g0) | DLRep(y1, x1 * g1)
-stmt.subproofs[0].set_simulated()
-
-prover = stmt.get_prover()
-verifier = stmt.get_verifier()
-
-commitment = prover.commit()
-challenge = verifier.send_challenge(commitment)
-response = prover.compute_response(challenge)
-assert verifier.verify(response)
-"""
+print("Proof verified: ", v)

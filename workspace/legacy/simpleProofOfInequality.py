@@ -18,13 +18,13 @@ c0, c1 = enc(g, order, pk, m.value, r.value)
 enc_stmt = DLRep(c0, r*g) & DLRep(c1, m*g + r*pk)
 
 ####
-_, h = make_generators(2, group)
+_, pk = make_generators(2, group)
 
 r = order.random()
 
 a = 1
 
-C = (a+r)*h
+C = (a+r)*pk
 
 
 y1 = m.value*g
