@@ -582,6 +582,7 @@ def proof(g, order, sk_id, pk_T, sk_vs, pk_vs, relation):
 
 
 
+#EXAMPLE 1
 #Ordinary run of the proof showcasing how to run with each relation
 
 #Generating a keypair for a voter
@@ -598,7 +599,20 @@ proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 2)
 proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 3)
 
 
+#EXAMPLE 2
+"""
+#Experimenting w. the range for brute force and range proof in R3
+#First adjust the ranges at lines:
+    #288, 289
+    #337, 341
+#NB! all ranges should be the same value when running
 
+sk_1 = order.random()
+pk_1 = sk_vs*g
+proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 3)
+"""
+
+#EXAMPLE 3
 """
 #Run with multiple voters
 #Can be extended by generating more voter key pairs and running
@@ -610,8 +624,9 @@ pk_1 = sk_vs*g
 sk_2 = order.random()
 pk_2 = sk_2*g
 
-time1, v1 = proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 1)
-time2, v2 = proof(g, order, sk_2, pk_T, sk_vs, pk_vs, 1)
+#Choose which relation to run. 2 is chosen at default here.
+time1, v1 = proof(g, order, sk_1, pk_T, sk_vs, pk_vs, 2)
+time2, v2 = proof(g, order, sk_2, pk_T, sk_vs, pk_vs, 2)
 
 print("=======")
 print("total operation time: ", time1+time2)
